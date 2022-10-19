@@ -4,10 +4,14 @@ const ForbiddenError = require('../errors/forbidden-err');
 const NotFoundError = require('../errors/not-found-err');
 
 function getMovies(req, res, next) {
-  Movie.find({
-    query: { owner: req.user._id },
-  })
-    .then((movies) => res.status(200).send(movies))
+  Movie.find({ owner: req.user._id })
+    .then((movies) => {
+      if (movies.length === 0) {
+        res.status(200).send({ message: 'У вас пока нет фильмов' });
+      } else {
+        res.status(200).send(movies);
+      }
+    })
     .catch(next);
 }
 
