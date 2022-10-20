@@ -17,7 +17,6 @@ module.exports = (req, res, next) => {
     req.user = payload;
     next();
   } catch (err) {
-    console.log(NODE_ENV === 'production' ? JWT_SECRET : JWTdev);
     next(new UnauthorizedError('Необходима авторизация'));
   }
 };
