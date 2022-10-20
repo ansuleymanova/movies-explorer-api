@@ -16,31 +16,8 @@ function getMovies(req, res, next) {
 }
 
 function postMovie(req, res, next) {
-  const {
-    country,
-    director,
-    duration,
-    year,
-    description,
-    image,
-    trailerLink,
-    thumbnail,
-    movieId,
-    nameRU,
-    nameEN,
-  } = req.body;
   Movie.create({
-    country,
-    director,
-    duration,
-    year,
-    description,
-    image,
-    trailerLink,
-    thumbnail,
-    movieId,
-    nameRU,
-    nameEN,
+    ...req.body,
     owner: req.user._id,
   })
     .then((movie) => res.status(200).send(movie))
@@ -57,7 +34,7 @@ function deleteMovie(req, res, next) {
   Movie.findById(req.params.id)
     .then((movie) => {
       if (!movie) {
-        throw new NotFoundError('Такого пользователя нет');
+        throw new NotFoundError('Такого фильма нет');
       }
       if (req.user._id !== movie.owner.toString()) {
         throw new ForbiddenError('Удалить чужой фильм нельзя');

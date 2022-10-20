@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { JWTdev } = require('../utils/config');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 const User = require('../models/user');
@@ -44,19 +45,13 @@ function login(req, res, next) {
       }
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        NODE_ENV === 'production' ? JWT_SECRET : JWTdev,
         { expiresIn: '7d' },
       );
       res
         .send({ token });
     }).catch(next);
-  }).catch((err) => {
-    if (err.name === 'CastError' || err.name === 'ValidationError') {
-      next(new BadRequestError('Переданы некорректные данные'));
-    } else {
-      next(err);
-    }
-  });
+  }).catch(next);
 }
 
 function getSelf(req, res, next) {
@@ -78,10 +73,10 @@ function getSelf(req, res, next) {
 }
 
 function updateSelf(req, res, next) {
-  const { name, about } = req.body;
+  const { name, email } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
-    { name, about },
+    { name, email },
     { new: true, runValidators: true },
   )
     .then((user) => {
